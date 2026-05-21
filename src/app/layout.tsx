@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Bebas_Neue, Syncopate } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({ 
@@ -30,9 +31,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "SB-Mid-client-c8o8D2qXq5pMh02m";
+  const snapScriptSrc = clientKey.startsWith("SB-")
+    ? "https://app.sandbox.midtrans.com/snap/snap.js"
+    : "https://app.midtrans.com/snap/snap.js";
+
   return (
     <html lang="id">
       <body className={`${inter.variable} ${bebasNeue.variable} ${syncopate.variable} antialiased`}>
+        <Script 
+          src={snapScriptSrc} 
+          data-client-key={clientKey}
+          strategy="afterInteractive"
+        />
         {children}
       </body>
     </html>
