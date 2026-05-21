@@ -29,19 +29,31 @@ export default function Home() {
 
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiBaseUrl}/api/v1/subscribe`, {
+      const isGoogleScript = apiBaseUrl.includes("script.google.com");
+
+      // For Google Apps Script, we don't set Content-Type header to prevent CORS preflight issues
+      const fetchUrl = isGoogleScript ? apiBaseUrl : `${apiBaseUrl}/api/v1/subscribe`;
+      const fetchHeaders = isGoogleScript ? {} : { "Content-Type": "application/json" };
+
+      const response = await fetch(fetchUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: fetchHeaders,
         body: JSON.stringify({ email }),
+        mode: isGoogleScript ? "no-cors" : "cors",
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.detail || "Terjadi kesalahan.");
+      if (isGoogleScript) {
+        // In "no-cors" mode, we cannot read the response, but it successfully posts to Google Sheets
+        setIsSubscribed(true);
+        setMessage("THANK YOU FOR JOINING THE MOVEMENT.");
+      } else {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "Terjadi kesalahan.");
+        }
+        setIsSubscribed(true);
+        setMessage(data.message || "THANK YOU FOR JOINING THE MOVEMENT.");
       }
-
-      setIsSubscribed(true);
-      setMessage(data.message || "THANK YOU FOR JOINING THE MOVEMENT.");
     } catch (err: any) {
       setSubError(true);
       setMessage(err.message || "Failed to subscribe. Please try again.");
