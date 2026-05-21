@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNVN - OFFICIAL</title>
+    
+    <!-- High-End Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
+    
+    <style>
+        /* CORE RESET & VARIABLES */
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none;
+        }
+
+        /* CUSTOM CURSOR */
+        .cursor {
+            position: fixed; top: 0; left: 0;
+            width: 10px; height: 10px;
+            background-color: #fff; border-radius: 50%;
+            pointer-events: none; mix-blend-mode: difference;
+            z-index: 10000; transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 600; color: transparent; letter-spacing: 1px;
+        }
+        .cursor.active {
+            width: 65px; height: 65px; background-color: #fff; color: #000; mix-blend-mode: normal;
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 1.5px; line-height: 0.9; }
+
+        /* NOISE & CANVAS (Subtle & Tidy) */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9998; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background: var(--bg);
+        }
+
+        /* LOADER */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 30px;
+            z-index: 9999;
+        }
+        .loader-logo { font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: clamp(24px, 5vw, 36px); letter-spacing: 14px; color: #fff; opacity: 0; }
+        .loader-line { width: 280px; max-width: 80vw; height: 1px; background: rgba(255,255,255,0.15); position: relative; overflow: hidden; }
+        .loader-line-fill { height: 1px; background: #fff; width: 0; position: absolute; top: 0; left: 0; }
+        .loader-counter { font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 4px; color: var(--text-dim); opacity: 0; }
+        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+        /* FLOATING WHATSAPP */
+        .float-wa {
+            position: fixed; bottom: 30px; right: 30px; z-index: 500;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: #25D366; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(37,211,102,0.4); text-decoration: none;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+            opacity: 0; transform: scale(0);
+        }
+        .float-wa.visible { opacity: 1; transform: scale(1); }
+        .float-wa:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(37,211,102,0.6); }
+        .float-wa svg { width: 28px; height: 28px; fill: #fff; }
+        .float-wa-pulse {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            background: rgba(37,211,102,0.4); animation: waPulse 2s infinite;
+        }
+        @keyframes waPulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.8); opacity: 0; } }
+
+        /* NAVIGATION (Clean & Tidy Glassmorphism) */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 20px 5vw;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-left, .nav-right { display: flex; align-items: center; gap: 30px; }
+        .logo { font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 4px; color: #fff; text-decoration: none; }
+        
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; color: #fff; text-decoration: none; opacity: 0.7; transition: opacity 0.3s; cursor: none;}
+        .nav-links a:hover { opacity: 1; }
+        
+        .cart-btn { background: none; border: none; color: #fff; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; cursor: none; transition: 0.3s; }
+        .cart-btn:hover { opacity: 0.7; }
+
+        /* MENU TOGGLE (HAMBURGER) */
+        .menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: none; z-index: 1001; }
+        .menu-toggle span { display: block; width: 24px; height: 1.5px; background: #fff; transition: 0.3s ease; }
+        .menu-toggle.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .menu-toggle.active span:nth-child(2) { opacity: 0; }
+        .menu-toggle.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        /* OVERLAYS (MOBILE MENU & CART) */
+        .overlay-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .overlay-bg.active { opacity: 1; pointer-events: auto; }
+
+        /* MOBILE MENU & CART DRAWER (Unified Style) */
+        .side-panel {
+            position: fixed; top: 0; width: 100vw; max-width: 400px; height: 100vh;
+            background: var(--surface); z-index: 1000;
+            display: flex; flex-direction: column;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .mobile-menu { left: 0; transform: translateX(-100%); border-right: 1px solid var(--border); padding: 40px; justify-content: center;}
+        .mobile-menu.active { transform: translateX(0); }
+        .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: #fff; text-decoration: none; margin-bottom: 20px; letter-spacing: 2px; opacity: 0.6; transition: 0.3s; cursor: none; }
+        .mobile-menu a:hover { opacity: 1; transform: translateX(10px); }
+
+        .cart-drawer { right: 0; transform: translateX(100%); border-left: 1px solid var(--border); }
+        .cart-drawer.active { transform: translateX(0); }
+        .cart-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .cart-header h3 { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 2px; }
+        .close-cart { background: none; border: none; color: #fff; font-size: 20px; cursor: none; opacity: 0.5; transition: 0.3s; }
+        .close-cart:hover { opacity: 1; }
+        .cart-body { flex: 1; padding: 40px; display: flex; justify-content: center; align-items: center; color: var(--text-dim); font-size: 13px; letter-spacing: 1px; }
+        .cart-footer { padding: 30px; border-top: 1px solid var(--border); }
+        .checkout-btn { width: 100%; padding: 18px; background: #fff; color: #000; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: none; transition: 0.3s; }
+        .checkout-btn:hover { background: #e0e0e0; }
+
+        /* HERO SECTION */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; }
+        .hero-image {
+            position: absolute; top: -5%; left: 0; width: 100%; height: 110%;
+            background: url('WhatsApp Image 2026-03-20 at 21.58.30.jpeg') center/cover;
+            opacity: 0; filter: grayscale(100%) contrast(1.2);
+            z-index: 0; will-change: transform;
+        }
+        .hero::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            background: linear-gradient(to top, var(--bg) 0%, transparent 100%); z-index: 1;
+        }
+        .hero-content { position: relative; z-index: 2; padding: 0 5vw; max-width: 900px; display: flex; flex-direction: column; align-items: center; }
+        .hero-subtitle { font-size: 10px; font-weight: 500; letter-spacing: 6px; color: var(--text-dim); margin-bottom: 25px; text-transform: uppercase; opacity: 0; }
+        .hero h1 { font-size: clamp(3.5rem, 10vw, 9rem); margin-bottom: 25px; opacity: 0; overflow: hidden; }
+        .hero p { font-size: 14px; color: var(--text-dim); line-height: 1.7; letter-spacing: 0.5px; margin-bottom: 40px; max-width: 400px; opacity: 0; }
+        
+        .btn-shop {
+            display: inline-block; padding: 18px 48px; background: #fff; color: #000;
+            font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+            text-decoration: none; opacity: 0; cursor: none;
+            position: relative; overflow: hidden;
+            transition: color 0.4s ease;
+        }
+        .btn-shop::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: #000; transition: left 0.4s cubic-bezier(0.16,1,0.3,1); z-index: 0;
+        }
+        .btn-shop span { position: relative; z-index: 1; }
+        .btn-shop:hover { color: #fff; }
+        .btn-shop:hover::before { left: 0; }
+
+        /* HERO SCROLL INDICATOR */
+        .scroll-indicator {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px;
+            opacity: 0;
+        }
+        .scroll-line { width: 1px; height: 60px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; }
+        .scroll-line::after { content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: #fff; animation: scrollDown 1.5s infinite cubic-bezier(0.4,0,0.2,1); }
+        @keyframes scrollDown { 0% { top: -100%; } 100% { top: 100%; } }
+        .scroll-label { font-size: 8px; letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase; }
+
+        /* INFINITE MARQUEE (Tidier dimensions) */
+        .marquee { width: 100%; padding: 18px 0; background: var(--surface); color: #fff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; white-space: nowrap; display: flex; align-items: center; position: relative; z-index: 2; }
+        .marquee-track { display: inline-block; animation: scrollText 30s linear infinite; }
+        .marquee-text { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; margin: 0 40px; opacity: 0.8; }
+        .marquee-dot { font-size: 10px; vertical-align: middle; color: var(--text-dim); }
+        @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* COLLECTION GRID (Ultra Clean Editorial Layout) */
+        .collection { padding: 120px 5vw; position: relative; z-index: 2; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .section-header h2 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 1px; }
+        .view-all { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); text-decoration: none; transition: 0.3s; cursor: none; }
+        .view-all:hover { color: #fff; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 60px 30px; }
+        .product-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: none; group; }
+        
+        .product-img-box {
+            background: var(--surface); width: 100%; aspect-ratio: 3/4; position: relative; overflow: hidden; border-radius: 4px; margin-bottom: 20px;
+        }
+        .product-img-box img {
+            width: 100%; height: 100%; object-fit: contain; padding: 15px; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .product-badge { position: absolute; top: 15px; left: 15px; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; background: #fff; color: #000; padding: 4px 8px; text-transform: uppercase; z-index: 2; border-radius: 2px; }
+        
+        .quick-add {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); color: #fff; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 2px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 3;
+        }
+
+        .product-card:hover .product-img-box img { transform: scale(1.05); }
+        .product-card:hover .quick-add { transform: translateY(0); }
+        
+        .product-details { display: flex; flex-direction: column; gap: 6px; }
+        .product-title-row { display: flex; justify-content: space-between; align-items: baseline; }
+        .product-title { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+        .product-price { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; }
+        .product-desc { font-size: 12px; color: var(--text-dim); }
+
+        /* MANIFESTO */
+        .manifesto { padding: 100px 5vw; display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: center; border-top: 1px solid var(--border); position: relative; z-index: 2; }
+        .manifesto-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; filter: grayscale(100%); border-radius: 4px; }
+        .manifesto-text { padding: 40px 0; }
+        .manifesto-text h2 { font-size: clamp(3rem, 6vw, 4.5rem); margin-bottom: 30px; }
+        .manifesto-text p { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 20px; max-width: 480px; letter-spacing: 0.5px; }
+        .manifesto-text p strong { color: #fff; font-weight: 500; }
+
+        /* NEWSLETTER */
+        .newsletter { padding: 100px 5vw; border-top: 1px solid var(--border); text-align: center; position: relative; z-index: 2; background: var(--surface); }
+        .newsletter h2 { font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 15px; }
+        .newsletter p { color: var(--text-dim); font-size: 13px; margin-bottom: 40px; letter-spacing: 1px; text-transform: uppercase; }
+        .subscribe-form { display: flex; max-width: 400px; margin: 0 auto; border-bottom: 1px solid rgba(255,255,255,0.3); transition: border-color 0.3s; }
+        .subscribe-form:hover, .subscribe-form:focus-within { border-bottom-color: #fff; }
+        .subscribe-form input { flex: 1; background: transparent; border: none; color: #fff; padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
+        .subscribe-form input::placeholder { color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .subscribe-form button { background: none; border: none; color: #fff; font-size: 18px; cursor: none; padding: 0 10px; transition: 0.3s; }
+        .subscribe-form button:hover { transform: translateX(5px); }
+
+        /* FOOTER */
+        footer { padding: 60px 5vw 30px; border-top: 1px solid var(--border); position: relative; z-index: 2; background: var(--bg); }
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 50px; margin-bottom: 60px; }
+        .footer-logo { font-family: 'Syncopate', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 4px; margin-bottom: 20px; display: block; color: #fff; text-decoration: none;}
+        .footer-col h4 { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 25px; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .footer-col a { color: var(--text-main); text-decoration: none; font-size: 12px; letter-spacing: 0.5px; transition: 0.3s; cursor: none; opacity: 0.8; }
+        .footer-col a:hover { opacity: 1; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 25px; border-top: 1px solid var(--border); font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+
+        /* REVEAL CLASSES */
+        .reveal { opacity: 0; transform: translateY(40px); }
+        .reveal.active { opacity: 1; transform: translateY(0); transition: opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1s cubic-bezier(0.16,1,0.3,1); }
+
+        /* CLIP REVEAL */
+        .clip-reveal { clip-path: inset(0 100% 0 0); }
+        .clip-reveal.active { clip-path: inset(0 0% 0 0); transition: clip-path 1.2s cubic-bezier(0.16,1,0.3,1); }
+
+        /* PRODUCT CARD TILT */
+        .product-card { transform-style: preserve-3d; will-change: transform; }
+
+        /* SECTION COUNTER */
+        .section-num { font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 10px; }
+
+        /* HORIZONTAL SCROLL HINT on mobile */
+        @media (max-width: 600px) {
+            .product-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 16px; padding-bottom: 20px; scrollbar-width: none; }
+            .product-grid::-webkit-scrollbar { display: none; }
+            .product-card { min-width: 75vw; scroll-snap-align: start; flex-shrink: 0; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .manifesto { grid-template-columns: 1fr; gap: 40px; padding: 80px 5vw; }
+            .manifesto-img { aspect-ratio: 16/9; }
+            .manifesto-text { padding: 0; }
+            .footer-top { grid-template-columns: 1fr; gap: 40px; }
+        }
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            .cursor { display: none !important; }
+            .nav-links { display: none; }
+            .menu-toggle { display: flex; }
+            .cart-btn { display: none; }
+            nav { padding: 15px 5vw; }
+            .logo { font-size: 16px; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 40px; }
+            .hero h1 { line-height: 0.9; margin-bottom: 15px; }
+            .cart-drawer { max-width: 85vw; }
+            .footer-bottom { flex-direction: column; gap: 15px; text-align: center; }
+            .float-wa { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+            .btn-shop { cursor: auto; }
+            .scroll-indicator { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+
+    <!-- Noise Overlay -->
+    <div class="noise"></div>
+
+    <!-- Background Canvas (Slower & Softer) -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Overlay Background -->
+    <div class="overlay-bg" id="overlay"></div>
+
+    <!-- Mobile Menu -->
+    <div class="side-panel mobile-menu" id="mobileMenu">
+        <a href="#collection">Latest Drop</a>
+        <a href="#collection">Apparel</a>
+        <a href="#manifesto">Manifesto</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <!-- Slide-Out Cart -->
+    <div class="side-panel cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3>CART (0)</h3>
+            <button class="close-cart" id="closeCart">✕</button>
+        </div>
+        <div class="cart-body">
+            <p>Your shopping bag is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <button class="checkout-btn hover-target">Checkout via WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="loader-logo" id="loaderLogo">RNVN</div>
+        <div class="loader-line" id="loaderLine"><div class="loader-line-fill" id="loaderFill"></div></div>
+        <div class="loader-counter" id="loaderCounter">0%</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="#" class="logo hover-target">RNVN</a>
+        </div>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="#collection" class="hover-target">Drop</a></li>
+                <li><a href="#collection" class="hover-target">Collection</a></li>
+                <li><a href="#manifesto" class="hover-target">Manifesto</a></li>
+            </ul>
+            <button class="cart-btn hover-target" id="cartBtn">Cart (0)</button>
+            <div class="menu-toggle hover-target" id="menuToggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-image" id="heroImage"></div>
+        <div class="hero-content">
+            <div class="hero-subtitle" id="heroSubtitle">Vol. 01 / Official Store</div>
+            <h1 id="heroTitle">Tak Dikenal.<br>Tak Tertandingi.</h1>
+            <p id="heroDesc">Dibangun untuk mereka yang menolak tren. Siluet boxy, material premium, dan identitas streetwear sejati.</p>
+            <a href="https://vt.tiktok.com/ZSHKqtkr8/?page=Mall" target="_blank" rel="noopener noreferrer" class="btn-shop hover-target" id="heroBtn"><span>SHOP NOW</span></a>
+        </div>
+        <div class="scroll-indicator" id="scrollIndicator">
+            <div class="scroll-line"></div>
+            <span class="scroll-label">Scroll</span>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee">
+        <div class="marquee-track">
+            <span class="marquee-text">RNVN OFFICIAL</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">SIGNATURE BOXY</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">PREMIUM STREETWEAR</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">LIMITED DROP</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">RNVN OFFICIAL</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">SIGNATURE BOXY</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">PREMIUM STREETWEAR</span><span class="marquee-dot">•</span>
+            <span class="marquee-text">LIMITED DROP</span>
+        </div>
+    </div>
+
+    <!-- Collection -->
+    <section id="collection" class="collection">
+        <div class="section-header reveal">
+            <h2>The Archives</h2>
+            <a href="#" class="view-all hover-target">View Full Catalog</a>
+        </div>
+
+        <div class="product-grid">
+            <!-- Product 1 -->
+            <a href="#" class="product-card reveal hover-target-image">
+                <div class="product-img-box">
+                    <div class="product-badge">New</div>
+                    <img src="rnvn4.png" alt="Signature Boxy">
+                    <div class="quick-add">QUICK ADD</div>
+                </div>
+                <div class="product-details">
+                    <div class="product-title-row">
+                        <span class="product-title">Signature Boxy Fit</span>
+                        <span class="product-price">IDR 249.000</span>
+                    </div>
+                    <div class="product-desc">Heavyweight Cotton</div>
+                </div>
+            </a>
+
+            <!-- Product 2 -->
+            <a href="#" class="product-card reveal hover-target-image" style="transition-delay: 0.1s;">
+                <div class="product-img-box">
+                    <img src="IMG_8767.JPG.jpeg" alt="Streetwear Core">
+                    <div class="quick-add">QUICK ADD</div>
+                </div>
+                <div class="product-details">
+                    <div class="product-title-row">
+                        <span class="product-title">Streetwear Core</span>
+                        <span class="product-price">IDR 249.000</span>
+                    </div>
+                    <div class="product-desc">Oversized Silhouette</div>
+                </div>
+            </a>
+
+            <!-- Product 3 -->
+            <a href="#" class="product-card reveal hover-target-image" style="transition-delay: 0.2s;">
+                <div class="product-img-box">
+                    <img src="tshirts rnvn.png" alt="Essential T-Shirt">
+                    <div class="quick-add">QUICK ADD</div>
+                </div>
+                <div class="product-details">
+                    <div class="product-title-row">
+                        <span class="product-title">Essential Regular</span>
+                        <span class="product-price">IDR 199.000</span>
+                    </div>
+                    <div class="product-desc">Classic Fit</div>
+                </div>
+            </a>
+
+            <!-- Product 4 -->
+            <a href="#" class="product-card reveal hover-target-image" style="transition-delay: 0.3s;">
+                <div class="product-img-box">
+                    <img src="IMG_8789.JPG.jpeg" alt="Urban Edition">
+                    <div class="quick-add">QUICK ADD</div>
+                </div>
+                <div class="product-details">
+                    <div class="product-title-row">
+                        <span class="product-title">Urban Edition Tee</span>
+                        <span class="product-price">IDR 219.000</span>
+                    </div>
+                    <div class="product-desc">Graphic Print</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Manifesto -->
+    <section id="manifesto" class="manifesto">
+        <img src="Untitled-1-Recovered.png" alt="RNVN Vision" class="manifesto-img reveal">
+        <div class="manifesto-text reveal">
+            <h2>The<br>Manifesto</h2>
+            <p><strong>Pakaian bukan sekadar pembungkus tubuh, melainkan pernyataan sikap.</strong> RNVN diciptakan untuk jiwa-jiwa independen yang berani mendobrak batas dan mendefinisikan ulang makna gaya di jalanan.</p>
+            <p>Melalui proses kurasi material yang ketat dan siluet boxy yang presisi, setiap potongan kain RNVN dirancang untuk memberikan kenyamanan tanpa mengorbankan estetika. Kami menolak untuk menjadi biasa.</p>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter reveal">
+        <h2>Join The Cult</h2>
+        <p>Subscribe for early access to limited drops and exclusive content.</p>
+        <div class="subscribe-form">
+            <input type="email" placeholder="Enter your email address" class="hover-target">
+            <button class="hover-target">→</button>
+        </div>
+    </section>
+
+    <!-- Floating WhatsApp -->
+    <a href="https://wa.me/628563122123" target="_blank" rel="noopener noreferrer" class="float-wa" id="floatWa" aria-label="Chat WhatsApp">
+        <div class="float-wa-pulse"></div>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-top">
+            <div>
+                <a href="#" class="footer-logo hover-target">RNVN</a>
+                <p style="color: var(--text-dim); font-size: 12px; max-width: 250px; line-height: 1.8;">Tak Dikenal. Tak Tertandingi.<br>Indonesian premium streetwear label.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Collections</h4>
+                <ul>
+                    <li><a href="#" class="hover-target">Latest Drop</a></li>
+                    <li><a href="#" class="hover-target">Boxy T-Shirts</a></li>
+                    <li><a href="#" class="hover-target">Regular T-Shirts</a></li>
+                    <li><a href="#" class="hover-target">Lookbook</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#" class="hover-target">Size Chart</a></li>
+                    <li><a href="#" class="hover-target">Shipping Info</a></li>
+                    <li><a href="#" class="hover-target">Return Policy</a></li>
+                    <li><a href="#" class="hover-target">WhatsApp Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 RNVN OFFICIAL. ALL RIGHTS RESERVED.</div>
+            <div>JAKARTA, INDONESIA</div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ─── 1. LOADER ───────────────────────────────────────────────
+        const loader = document.getElementById('loader');
+        const loaderLogo = document.getElementById('loaderLogo');
+        const loaderFill = document.getElementById('loaderFill');
+        const loaderCounter = document.getElementById('loaderCounter');
+
+        const loaderTl = gsap.timeline({
+            onComplete: () => {
+                gsap.to(loader, { opacity: 0, duration: 0.8, ease: 'power2.inOut', onComplete: () => { loader.style.display = 'none'; initHeroAnim(); } });
+            }
+        });
+        loaderTl
+            .to(loaderLogo, { opacity: 1, duration: 0.6, ease: 'power2.out' })
+            .to(loaderFill, { width: '100%', duration: 1.2, ease: 'power2.inOut' }, '-=0.2')
+            .to(loaderCounter, { opacity: 1, duration: 0.3 }, '<')
+            .add(() => {
+                let count = 0;
+                const interval = setInterval(() => {
+                    count += 4;
+                    if (count >= 100) { count = 100; clearInterval(interval); }
+                    loaderCounter.textContent = count + '%';
+                }, 40);
+            }, '<');
+
+        // ─── 2. HERO ANIMATION ────────────────────────────────────────
+        function initHeroAnim() {
+            const heroTl = gsap.timeline();
+            heroTl
+                .to('#heroImage', { opacity: 0.25, duration: 1.5, ease: 'power2.out' })
+                .to('#heroSubtitle', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=1')
+                .to('#heroTitle', { opacity: 1, duration: 0.1 }, '-=0.5')
+                .from('#heroTitle', { y: 60, duration: 1, ease: 'power3.out' }, '<')
+                .to('#heroDesc', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+                .to('#heroBtn', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
+                .to('#scrollIndicator', { opacity: 1, duration: 0.6 }, '-=0.2')
+                .add(() => {
+                    setTimeout(() => {
+                        const wa = document.getElementById('floatWa');
+                        wa.classList.add('visible');
+                    }, 800);
+                });
+        }
+
+        // Set initial states
+        gsap.set('#heroSubtitle', { y: 20 });
+        gsap.set('#heroDesc', { y: 20 });
+        gsap.set('#heroBtn', { y: 20 });
+
+
+        // ─── 3. GSAP PARALLAX ────────────────────────────────────────
+        gsap.to('#heroImage', {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+        });
+
+        // ─── 4. GSAP SCROLL REVEALS ──────────────────────────────────
+        gsap.utils.toArray('.reveal').forEach((el, i) => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+                delay: i % 4 * 0.1
+            });
+        });
+
+        // Section headers clip-path reveal
+        gsap.utils.toArray('.section-header').forEach(el => {
+            gsap.from(el, {
+                clipPath: 'inset(0 100% 0 0)',
+                opacity: 0, duration: 1.2,
+                ease: 'power4.out',
+                scrollTrigger: { trigger: el, start: 'top 85%' }
+            });
+        });
+
+        // Staggered product cards
+        gsap.utils.toArray('.product-card').forEach((card, i) => {
+            gsap.from(card, {
+                opacity: 0, y: 60, duration: 0.9,
+                ease: 'power3.out',
+                scrollTrigger: { trigger: card, start: 'top 90%' },
+                delay: i * 0.12
+            });
+        });
+
+        // Manifesto text words
+        gsap.from('.manifesto-text h2', {
+            opacity: 0, y: 50, duration: 1.2, ease: 'power3.out',
+            scrollTrigger: { trigger: '.manifesto', start: 'top 75%' }
+        });
+        gsap.utils.toArray('.manifesto-text p').forEach((p, i) => {
+            gsap.from(p, {
+                opacity: 0, x: -30, duration: 1, ease: 'power2.out',
+                scrollTrigger: { trigger: p, start: 'top 88%' },
+                delay: i * 0.15
+            });
+        });
+
+        // ─── 5. MOBILE MENU & CART DRAWER ───────────────────────────
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+        const cartBtn = document.getElementById('cartBtn');
+        const cartDrawer = document.getElementById('cartDrawer');
+        const closeCart = document.getElementById('closeCart');
+
+        function closeAll() {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            cartDrawer.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        menuToggle.addEventListener('click', () => {
+            const isActive = menuToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = isActive ? 'hidden' : 'auto';
+            if (cartDrawer.classList.contains('active')) cartDrawer.classList.remove('active');
+        });
+
+        if (cartBtn) {
+            cartBtn.addEventListener('click', () => {
+                cartDrawer.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                if (menuToggle.classList.contains('active')) {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                }
+            });
+        }
+
+        closeCart.addEventListener('click', closeAll);
+        overlay.addEventListener('click', closeAll);
+        document.querySelectorAll('.mobile-menu a').forEach(link => link.addEventListener('click', closeAll));
+
+        // ─── 6. 3D CARD TILT (Desktop only) ─────────────────────────
+        if (window.matchMedia('(min-width: 769px)').matches) {
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    gsap.to(card, { rotateY: x * 10, rotateX: -y * 10, duration: 0.4, ease: 'power2.out', transformPerspective: 800 });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'elastic.out(1,0.6)' });
+                });
+            });
+
+            // Magnetic Shop Button
+            const shopBtn = document.getElementById('heroBtn');
+            if (shopBtn) {
+                shopBtn.addEventListener('mousemove', e => {
+                    const rect = shopBtn.getBoundingClientRect();
+                    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+                    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+                    gsap.to(shopBtn, { x, y, duration: 0.4, ease: 'power2.out' });
+                });
+                shopBtn.addEventListener('mouseleave', () => {
+                    gsap.to(shopBtn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1,0.5)' });
+                });
+            }
+        }
+
+        // ─── 7. CUSTOM CURSOR ────────────────────────────────────────
+        const cursor = document.getElementById('cursor');
+        const hoverTargets = document.querySelectorAll('.hover-target');
+        const imageTargets = document.querySelectorAll('.hover-target-image');
+
+        if (window.matchMedia('(min-width: 769px)').matches) {
+            window.addEventListener('mousemove', e => {
+                gsap.to(cursor, { left: e.clientX, top: e.clientY, duration: 0.15, ease: 'power2.out' });
+            });
+            hoverTargets.forEach(t => {
+                t.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                t.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            });
+            imageTargets.forEach(t => {
+                t.addEventListener('mouseenter', () => { cursor.classList.add('active'); cursor.textContent = 'VIEW'; });
+                t.addEventListener('mouseleave', () => { cursor.classList.remove('active'); cursor.textContent = ''; });
+            });
+        }
+
+        // ─── 8. NAV HIDE ON SCROLL DOWN ─────────────────────────────
+        let lastScroll = 0;
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            const cur = window.scrollY;
+            if (cur > lastScroll && cur > 100) {
+                gsap.to(nav, { yPercent: -100, duration: 0.4, ease: 'power2.inOut' });
+            } else {
+                gsap.to(nav, { yPercent: 0, duration: 0.4, ease: 'power2.inOut' });
+            }
+            lastScroll = cur;
+        }, { passive: true });
+
+        // ─── 9. PARTICLE CANVAS ──────────────────────────────────────
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+
+        function resizeCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() { this.reset(); this.y = Math.random() * height; }
+            reset() {
+                this.x = Math.random() * width; this.y = height + 10;
+                this.size = Math.random() * 1.2 + 0.1;
+                this.speedY = -(Math.random() * 0.15 + 0.05);
+                this.opacity = Math.random() * 0.25 + 0.03;
+            }
+            update() { this.y += this.speedY; this.x += Math.sin(this.y * 0.01) * 0.2; if (this.y < -10) this.reset(); }
+            draw() { ctx.fillStyle = `rgba(255,255,255,${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+
+        function initParticles() { particles = []; let n = Math.floor((width * height) / 30000); for (let i = 0; i < n; i++) particles.push(new Particle()); }
+        initParticles();
+
+        function animateCanvas() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateCanvas); }
+        animateCanvas();
+    </script>
+</body>
+</html>
