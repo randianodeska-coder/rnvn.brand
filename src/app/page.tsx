@@ -282,9 +282,8 @@ export default function Home() {
         className={`fixed inset-0 bg-black/70 backdrop-blur-md z-[990] transition-all duration-500 ${menuActive || cartActive ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`} 
         onClick={closeOverlays}
       ></div>
-
       {/* Mobile Menu */}
-      <div className={`fixed top-0 w-full max-w-[380px] h-screen bg-black/95 backdrop-blur-2xl z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] left-0 border-r border-white/5 p-10 justify-between ${menuActive ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`fixed top-0 w-full max-w-[380px] h-screen h-[100dvh] bg-black/95 backdrop-blur-2xl z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] left-0 border-r border-white/5 p-10 justify-between ${menuActive ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex justify-between items-center pb-6 border-b border-white/5">
           <span className="font-[family-name:var(--font-syncopate)] font-bold text-sm tracking-[3px] text-white">MENU</span>
           <button className="bg-transparent border-none text-white text-lg cursor-none opacity-50 hover:opacity-100 transition-opacity" onClick={closeOverlays}>✕</button>
@@ -304,7 +303,7 @@ export default function Home() {
       </div>
 
       {/* Slide-Out Cart */}
-      <div className={`fixed top-0 w-full sm:w-[440px] max-w-full h-screen bg-black/95 backdrop-blur-2xl z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] right-0 border-l border-white/5 ${cartActive ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 w-full sm:w-[440px] max-w-full h-screen h-[100dvh] bg-black/95 backdrop-blur-2xl z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] right-0 border-l border-white/5 ${cartActive ? "translate-x-0" : "translate-x-full"}`}>
         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
           <h3 className="font-[family-name:var(--font-syncopate)] font-bold text-xs tracking-[3px] text-white">SHOPPING BAG ({items.reduce((acc, curr) => acc + curr.quantity, 0)})</h3>
           <button className="bg-transparent border-none text-white text-lg cursor-none opacity-50 hover:opacity-100 transition-opacity" onClick={closeOverlays}>✕</button>
@@ -374,10 +373,10 @@ export default function Home() {
           </div>
         )}
 
-        <div className="p-6 border-t border-white/5 flex flex-col gap-2.5 bg-black/20">
+        <div className="p-4 pb-8 md:p-6 border-t border-white/5 flex flex-col gap-2 bg-black/20">
           <button 
             disabled={items.length === 0}
-            className="w-full p-4 bg-white text-black text-[11px] font-bold tracking-widest uppercase border-none cursor-none transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none" 
+            className="w-full py-3 md:py-4 px-4 bg-white text-black text-[11px] font-bold tracking-widest uppercase border-none cursor-none transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none" 
             onClick={() => {
               const message = `Halo RNVN, saya ingin memesan:\n\n` + 
                               items.map(item => `- ${item.name} (${item.quantity}x) = IDR ${(item.price * item.quantity).toLocaleString("id-ID")}`).join("\n") +
@@ -393,7 +392,7 @@ export default function Home() {
               href="https://vt.tiktok.com/ZSHKqtkr8/?page=Mall" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="p-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
+              className="py-2.5 md:py-3 px-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
             >
               TikTok Shop
             </a>
@@ -401,7 +400,7 @@ export default function Home() {
               href="#" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="p-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
+              className="py-2.5 md:py-3 px-3 bg-[#0c0c0c]/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
             >
               Shopee Store
             </a>
@@ -512,17 +511,17 @@ export default function Home() {
           <a href="#" className="text-[11px] font-medium uppercase tracking-wide text-[#888888] no-underline transition-colors hover:text-white hover-target">View Full Catalog</a>
         </div>
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-y-10 gap-x-6 md:gap-y-[60px] md:gap-x-[30px] max-md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] max-md:gap-y-6 max-md:gap-x-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-[30px]">
           
           {/* Product 1 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative">
-            <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
-              <div className="absolute top-3 left-3 text-[8px] md:text-[9px] font-semibold tracking-[1.5px] bg-white text-black py-0.5 px-1.5 uppercase z-[2] rounded-sm">New</div>
-              <Image src="/assets/rnvn4.png" alt="Signature Boxy" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-2 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative">
+            <div className="bg-white w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
+              <div className="absolute top-3 left-3 text-[8px] md:text-[9px] font-semibold tracking-[1.5px] bg-black text-white py-0.5 px-1.5 uppercase z-[2] rounded-sm">New</div>
+              <Image src="/assets/rnvn4.png" alt="Signature Boxy" fill className="object-contain p-1 max-md:p-0 md:p-3 scale-[1.12] transition-transform duration-700 ease-out group-hover:scale-[1.18]" />
               
               {/* Mobile Quick Add (+) */}
               <button 
-                className="md:hidden absolute bottom-2.5 right-2.5 bg-white text-black w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
+                className="md:hidden absolute bottom-2.5 right-2.5 bg-black text-white w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 1, name: "BOXY FIT (Pre-Order)", price: 129000, image_url: "/assets/rnvn4.png" });
@@ -530,14 +529,14 @@ export default function Home() {
                 }}
                 aria-label="Add to cart"
               >
-                <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path>
                 </svg>
               </button>
 
               {/* Desktop Quick Add */}
               <div 
-                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black/75 backdrop-blur-md text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-white hover:text-black"
+                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-black/90"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 1, name: "BOXY FIT (Pre-Order)", price: 129000, image_url: "/assets/rnvn4.png" });
@@ -557,9 +556,9 @@ export default function Home() {
           </a>
 
           {/* Product 2 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.1s" }}>
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-2 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.1s" }}>
             <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
-              <Image src="/assets/img_8767.jpg.jpeg" alt="Streetwear Core" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              <Image src="/assets/img_8767.jpg.jpeg" alt="Streetwear Core" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
               
               {/* Mobile Quick Add (+) */}
               <button 
@@ -598,13 +597,13 @@ export default function Home() {
           </a>
 
           {/* Product 3 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.2s" }}>
-            <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
-              <Image src="/assets/tshirts rnvn.png" alt="Essential T-Shirt" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-2 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.2s" }}>
+            <div className="bg-white w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
+              <Image src="/assets/tshirts rnvn.png" alt="Essential T-Shirt" fill className="object-contain p-1 max-md:p-0 md:p-3 scale-[1.12] transition-transform duration-700 ease-out group-hover:scale-[1.18]" />
               
               {/* Mobile Quick Add (+) */}
               <button 
-                className="md:hidden absolute bottom-2.5 right-2.5 bg-white text-black w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
+                className="md:hidden absolute bottom-2.5 right-2.5 bg-black text-white w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 3, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/tshirts rnvn.png" });
@@ -612,14 +611,14 @@ export default function Home() {
                 }}
                 aria-label="Add to cart"
               >
-                <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path>
                 </svg>
               </button>
 
               {/* Desktop Quick Add */}
               <div 
-                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black/75 backdrop-blur-md text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-white hover:text-black"
+                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-black/90"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 3, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/tshirts rnvn.png" });
@@ -639,9 +638,9 @@ export default function Home() {
           </a>
 
           {/* Product 4 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.3s" }}>
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-2 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.3s" }}>
             <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
-              <Image src="/assets/img_8789.jpg.jpeg" alt="Urban Edition" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              <Image src="/assets/img_8789.jpg.jpeg" alt="Urban Edition" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
               
               {/* Mobile Quick Add (+) */}
               <button 
@@ -684,8 +683,8 @@ export default function Home() {
 
       {/* Manifesto */}
       <section id="manifesto" className="py-[100px] px-[5vw] md:py-[100px] max-md:py-[80px] grid grid-cols-1 md:grid-cols-2 gap-[40px] md:gap-[6vw] items-center border-t border-white/10 relative z-[2]">
-        <div className="w-full aspect-[16/9] md:aspect-[4/5] relative overflow-hidden rounded reveal filter grayscale">
-          <Image src="/assets/untitled-1-recovered.png" alt="RNVN Vision" fill className="object-cover" />
+        <div className="w-full aspect-[16/9] md:aspect-[4/5] relative overflow-hidden rounded reveal">
+          <Image src="/assets/untitled-1-recovered.png" alt="RNVN Vision" fill className="object-contain" />
         </div>
         <div className="py-0 md:py-10 reveal text-white">
           <h2 className="font-[family-name:var(--font-bebas)] text-[clamp(3rem,6vw,4.5rem)] mb-8 m-0 leading-[0.9]">The<br/>Manifesto</h2>
