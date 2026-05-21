@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Bebas_Neue, Syncopate } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -22,8 +22,17 @@ const syncopate = Syncopate({
 });
 
 export const metadata: Metadata = {
-  title: "RNVN - OFFICIAL",
-  description: "Tak Dikenal. Tak Tertandingi. Indonesian premium streetwear label.",
+  title: "RNVN OFFICIAL — Tak Dikenal. Tak Tertandingi.",
+  description: "Indonesian premium streetwear label. Limited drops, signature boxy fits, dan identitas streetwear sejati.",
+  keywords: ["RNVN", "streetwear", "baju premium", "kaos oversize", "fashion Indonesia", "limited drop"],
+};
+
+// viewport-fit=cover enables safe-area-inset on Android & iOS
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#050505",
 };
 
 export default function RootLayout({

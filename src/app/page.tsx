@@ -504,7 +504,10 @@ export default function Home() {
           </div>
         )}
 
-        <div className="p-4 pb-8 md:p-6 border-t border-white/5 flex flex-col gap-2 bg-black/20">
+        <div
+          className="p-4 md:p-6 border-t border-white/5 flex flex-col gap-2 bg-black/20"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
+        >
           <button 
             disabled={cartItems.length === 0}
             className="w-full py-3 md:py-4 px-4 bg-white text-black text-[11px] font-[family-name:var(--font-syncopate)] font-bold tracking-[2px] uppercase border-none cursor-none transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none" 
@@ -534,7 +537,7 @@ export default function Home() {
               href="https://vt.tiktok.com/ZSHKqtkr8/?page=Mall" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="py-2.5 md:py-3 px-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
+              className="py-3 px-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline transition-all duration-300"
             >
               TikTok Shop
             </a>
@@ -542,7 +545,7 @@ export default function Home() {
               href="#" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="py-2.5 md:py-3 px-3 bg-[#0c0c0c]/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
+              className="py-3 px-3 bg-[#0c0c0c]/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline transition-all duration-300"
             >
               Shopee Store
             </a>
@@ -561,8 +564,11 @@ export default function Home() {
       {/* Floating Cart Button (Mobile only) */}
       <button
         onClick={() => setCartActive(true)}
-        className="md:hidden fixed bottom-6 right-6 z-[990] w-14 h-14 bg-white text-black rounded-full flex items-center justify-center border border-white/20 active:scale-95 transition-all duration-300"
-        style={{ boxShadow: "0 8px 32px rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.5)" }}
+        className="md:hidden fixed right-5 z-[990] w-14 h-14 bg-white text-black rounded-full flex items-center justify-center border border-white/20 active:scale-95 transition-all duration-300"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
+          boxShadow: "0 8px 32px rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.5)"
+        }}
         aria-label="Shopping Cart"
       >
         <div className="relative">

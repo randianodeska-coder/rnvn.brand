@@ -157,7 +157,7 @@ export default function CheckoutPage() {
       </header>
 
       {/* Main Grid */}
-      <main className="max-w-7xl mx-auto px-4 py-8 md:px-[5vw] md:py-16 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-16">
+      <main className="max-w-7xl mx-auto px-4 pt-8 pb-36 md:px-[5vw] md:py-16 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-16">
         
         {/* Left Column: Form */}
         <section className="order-2 lg:order-1 animate-[fadeUpAnim_0.8s_ease]">
@@ -334,18 +334,22 @@ export default function CheckoutPage() {
       </main>
 
       {/* Mobile Sticky Pay Button */}
-      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-black/95 backdrop-blur-xl border-t border-white/5 py-4 pr-6 pl-14 pb-6 z-[990] flex items-center justify-between">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[8px] font-bold text-[#888888] tracking-[1.5px] uppercase">GRAND TOTAL</span>
-          <span className="text-sm font-extrabold text-white">IDR {grandTotal.toLocaleString("id-ID")}</span>
+      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-black/95 backdrop-blur-xl border-t border-white/5 z-[990]"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}
+      >
+        <div className="flex items-center justify-between px-5 pt-4 pb-2">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[8px] font-bold text-[#888888] tracking-[1.5px] uppercase">Grand Total</span>
+            <span className="text-sm font-extrabold text-white">IDR {grandTotal.toLocaleString("id-ID")}</span>
+          </div>
+          <button
+            onClick={handlePay}
+            disabled={isProcessing}
+            className="px-6 py-3.5 bg-white text-black font-[family-name:var(--font-syncopate)] font-bold text-[10px] tracking-[1.5px] uppercase rounded transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+          >
+            {isProcessing ? "PROCESSING..." : "PAY NOW"}
+          </button>
         </div>
-        <button
-          onClick={handlePay}
-          disabled={isProcessing}
-          className="px-6 py-3 bg-white text-black font-[family-name:var(--font-syncopate)] font-bold text-[10px] tracking-[1.5px] uppercase rounded transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
-        >
-          {isProcessing ? "PROCESSING..." : "PAY NOW"}
-        </button>
       </div>
 
       {/* Loading Overlay */}
