@@ -33,7 +33,7 @@ export default function Home() {
 
       // For Google Apps Script, we don't set Content-Type header to prevent CORS preflight issues
       const fetchUrl = isGoogleScript ? apiBaseUrl : `${apiBaseUrl}/api/v1/subscribe`;
-      const fetchHeaders = isGoogleScript ? {} : { "Content-Type": "application/json" };
+      const fetchHeaders: HeadersInit = isGoogleScript ? {} : { "Content-Type": "application/json" };
 
       const response = await fetch(fetchUrl, {
         method: "POST",
