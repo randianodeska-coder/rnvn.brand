@@ -505,8 +505,7 @@ export default function Home() {
         )}
 
         <div
-          className="p-4 md:p-6 border-t border-white/5 flex flex-col gap-2 bg-black/20"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
+          className="p-4 md:p-6 border-t border-white/5 flex flex-col gap-2 bg-black/20 pb-28 md:pb-6"
         >
           <button 
             disabled={cartItems.length === 0}
