@@ -372,7 +372,7 @@ export default function Home() {
       <section className="relative h-screen flex flex-col justify-center items-center text-center overflow-hidden">
         <div 
           className="absolute -top-[5%] left-0 w-full h-[110%] bg-cover bg-center opacity-25 grayscale contrast-125 z-0"
-          style={{ backgroundImage: "url('/assets/WhatsApp Image 2026-03-20 at 21.58.30.jpeg')" }}
+          style={{ backgroundImage: "url('/assets/whatsapp image 2026-03-20 at 21.58.30.jpeg')" }}
           ref={heroImageRef}
         ></div>
         <div className="absolute bottom-0 left-0 w-full h-[30%] bg-gradient-to-t from-[#050505] to-transparent z-[1]"></div>
@@ -439,12 +439,12 @@ export default function Home() {
           {/* Product 2 */}
           <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image" style={{ transitionDelay: "0.1s" }}>
             <div className="bg-[#0a0a0a] w-full aspect-[3/4] relative overflow-hidden rounded mb-5">
-              <Image src="/assets/IMG_8767.JPG.jpeg" alt="Streetwear Core" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              <Image src="/assets/img_8767.jpg.jpeg" alt="Streetwear Core" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
               <div 
                 className="absolute bottom-0 left-0 w-full p-4 bg-black/85 backdrop-blur-sm text-white text-center text-[10px] font-semibold tracking-widest translate-y-full transition-transform duration-300 ease-out z-[3] group-hover:translate-y-0"
                 onClick={(e) => {
                   e.preventDefault();
-                  addItem({ id: 2, name: "boxy fit (Pre-Order)", price: 129000, image_url: "/assets/IMG_8767.JPG.jpeg" });
+                  addItem({ id: 2, name: "boxy fit (Pre-Order)", price: 129000, image_url: "/assets/img_8767.jpg.jpeg" });
                   setCartActive(true);
                 }}
               >
@@ -487,12 +487,12 @@ export default function Home() {
           {/* Product 4 */}
           <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image" style={{ transitionDelay: "0.3s" }}>
             <div className="bg-[#0a0a0a] w-full aspect-[3/4] relative overflow-hidden rounded mb-5">
-              <Image src="/assets/IMG_8789.JPG.jpeg" alt="Urban Edition" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              <Image src="/assets/img_8789.jpg.jpeg" alt="Urban Edition" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
               <div 
                 className="absolute bottom-0 left-0 w-full p-4 bg-black/85 backdrop-blur-sm text-white text-center text-[10px] font-semibold tracking-widest translate-y-full transition-transform duration-300 ease-out z-[3] group-hover:translate-y-0"
                 onClick={(e) => {
                   e.preventDefault();
-                  addItem({ id: 4, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/IMG_8789.JPG.jpeg" });
+                  addItem({ id: 4, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/img_8789.jpg.jpeg" });
                   setCartActive(true);
                 }}
               >
@@ -514,7 +514,7 @@ export default function Home() {
       {/* Manifesto */}
       <section id="manifesto" className="py-[100px] px-[5vw] md:py-[100px] max-md:py-[80px] grid grid-cols-1 md:grid-cols-2 gap-[40px] md:gap-[6vw] items-center border-t border-white/10 relative z-[2]">
         <div className="w-full aspect-[16/9] md:aspect-[4/5] relative overflow-hidden rounded reveal filter grayscale">
-          <Image src="/assets/Untitled-1-Recovered.png" alt="RNVN Vision" fill className="object-cover" />
+          <Image src="/assets/untitled-1-recovered.png" alt="RNVN Vision" fill className="object-cover" />
         </div>
         <div className="py-0 md:py-10 reveal text-white">
           <h2 className="font-[family-name:var(--font-bebas)] text-[clamp(3rem,6vw,4.5rem)] mb-8 m-0 leading-[0.9]">The<br/>Manifesto</h2>
