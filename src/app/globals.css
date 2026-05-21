@@ -90,6 +90,33 @@ h1, h2, h3 {
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+/* PREMIUM GLASSMORPHISM & UTILITIES */
+.glass-premium {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glow-premium {
+  box-shadow: 0 0 50px -10px rgba(255, 255, 255, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.shadow-luxury {
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+}
+
+/* Cart notification badge pulse animation */
+@keyframes badge-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+.animate-badge-pulse {
+  animation: badge-pulse 2s infinite;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   body { cursor: auto; }

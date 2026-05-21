@@ -62,7 +62,17 @@ export default function Home() {
     }
   };
   
-  const { cartActive, setCartActive, items, addItem, removeItem, getCartTotal } = useCartStore();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
+  const { cartActive, setCartActive, items, addItem, removeItem, decrementItem, getCartTotal } = useCartStore();
 
   // Loader
   useEffect(() => {
@@ -267,44 +277,87 @@ export default function Home() {
       <div className="noise"></div>
       <canvas id="bg-canvas" ref={canvasRef}></canvas>
 
+      {/* Backdrop Blur Overlay */}
       <div 
-        className={`overlay-bg ${menuActive || cartActive ? "active" : ""}`} 
+        className={`fixed inset-0 bg-black/70 backdrop-blur-md z-[990] transition-all duration-500 ${menuActive || cartActive ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`} 
         onClick={closeOverlays}
       ></div>
 
       {/* Mobile Menu */}
-      <div className={`fixed top-0 w-screen max-w-[400px] h-screen bg-[#0a0a0a] z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] left-0 border-r border-white/10 p-10 justify-center ${menuActive ? "translate-x-0" : "-translate-x-full"}`}>
-        <a href="#collection" className="font-[family-name:var(--font-bebas)] text-5xl text-white no-underline mb-5 tracking-wide opacity-60 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Latest Drop</a>
-        <a href="#collection" className="font-[family-name:var(--font-bebas)] text-5xl text-white no-underline mb-5 tracking-wide opacity-60 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Apparel</a>
-        <a href="#manifesto" className="font-[family-name:var(--font-bebas)] text-5xl text-white no-underline mb-5 tracking-wide opacity-60 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Manifesto</a>
-        <a href="#contact" className="font-[family-name:var(--font-bebas)] text-5xl text-white no-underline mb-5 tracking-wide opacity-60 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Contact</a>
+      <div className={`fixed top-0 w-full max-w-[380px] h-screen bg-black/95 backdrop-blur-2xl z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] left-0 border-r border-white/5 p-10 justify-between ${menuActive ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex justify-between items-center pb-6 border-b border-white/5">
+          <span className="font-[family-name:var(--font-syncopate)] font-bold text-sm tracking-[3px] text-white">MENU</span>
+          <button className="bg-transparent border-none text-white text-lg cursor-none opacity-50 hover:opacity-100 transition-opacity" onClick={closeOverlays}>✕</button>
+        </div>
+        
+        <div className="flex flex-col gap-6 my-auto">
+          <a href="#collection" className="font-[family-name:var(--font-bebas)] text-[4.5rem] leading-[0.9] text-white no-underline tracking-wide opacity-50 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Latest Drop</a>
+          <a href="#collection" className="font-[family-name:var(--font-bebas)] text-[4.5rem] leading-[0.9] text-white no-underline tracking-wide opacity-50 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Apparel</a>
+          <a href="#manifesto" className="font-[family-name:var(--font-bebas)] text-[4.5rem] leading-[0.9] text-white no-underline tracking-wide opacity-50 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Manifesto</a>
+          <a href="#contact" className="font-[family-name:var(--font-bebas)] text-[4.5rem] leading-[0.9] text-white no-underline tracking-wide opacity-50 hover:opacity-100 hover:translate-x-2 transition-all cursor-none" onClick={closeOverlays}>Contact</a>
+        </div>
+
+        <div className="pt-6 border-t border-white/5 flex flex-col gap-2">
+          <span className="text-[9px] text-[#555] tracking-[2px] uppercase">RNVN OFFICIAL &copy; 2026</span>
+          <span className="text-[8px] text-[#444] tracking-[1.5px] uppercase">Premium Streetwear Label</span>
+        </div>
       </div>
 
       {/* Slide-Out Cart */}
-      <div className={`fixed top-0 w-screen max-w-[400px] h-screen bg-[#0a0a0a] z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] right-0 border-l border-white/10 ${cartActive ? "translate-x-0" : "translate-x-full"}`}>
-        <div className="p-8 border-b border-white/10 flex justify-between items-center">
-          <h3 className="font-semibold tracking-widest text-sm text-white">CART ({items.length})</h3>
-          <button className="bg-transparent border-none text-white text-xl cursor-none opacity-50 hover:opacity-100 transition-opacity" onClick={closeOverlays}>✕</button>
+      <div className={`fixed top-0 w-full sm:w-[440px] max-w-full h-screen bg-black/95 backdrop-blur-2xl z-[1000] flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] right-0 border-l border-white/5 ${cartActive ? "translate-x-0" : "translate-x-full"}`}>
+        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
+          <h3 className="font-[family-name:var(--font-syncopate)] font-bold text-xs tracking-[3px] text-white">SHOPPING BAG ({items.reduce((acc, curr) => acc + curr.quantity, 0)})</h3>
+          <button className="bg-transparent border-none text-white text-lg cursor-none opacity-50 hover:opacity-100 transition-opacity" onClick={closeOverlays}>✕</button>
         </div>
         
-        <div className="flex-1 p-8 flex flex-col gap-6 overflow-y-auto">
+        <div className="flex-1 p-6 flex flex-col gap-5 overflow-y-auto">
           {items.length === 0 ? (
-            <div className="flex-1 flex justify-center items-center text-[#888888] text-sm tracking-wider">
-              <p>Your shopping bag is empty.</p>
+            <div className="flex-1 flex flex-col justify-center items-center text-center gap-4 text-[#888888]">
+              <svg className="w-12 h-12 text-[#444] stroke-[1.25]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+              <div>
+                <h4 className="font-semibold text-white tracking-widest text-[11px] uppercase mb-1">Your bag is empty</h4>
+                <p className="text-[9px] uppercase tracking-wider text-[#666]">Add items from the collection to get started.</p>
+              </div>
+              <button 
+                onClick={closeOverlays}
+                className="mt-4 px-6 py-2.5 bg-white text-black text-[10px] font-bold tracking-widest uppercase hover:bg-gray-200 transition-colors cursor-none rounded-none"
+              >
+                Continue Shopping
+              </button>
             </div>
           ) : (
             items.map((item) => (
-              <div key={item.id} className="flex gap-4 items-center border-b border-white/10 pb-4">
-                <div className="w-[60px] aspect-[3/4] relative bg-black rounded overflow-hidden flex-shrink-0">
-                  <Image src={item.image_url} alt={item.name} fill className="object-cover" />
+              <div key={item.id} className="flex gap-4 items-center border-b border-white/5 pb-4 last:border-0">
+                <div className="w-[70px] aspect-[3/4] relative bg-[#0b0b0b] rounded overflow-hidden flex-shrink-0 border border-white/5">
+                  <Image src={item.image_url} alt={item.name} fill className="object-cover p-1" />
                 </div>
-                <div className="flex-1 flex flex-col gap-1">
-                  <span className="text-[11px] font-semibold tracking-wide uppercase text-white">{item.name}</span>
-                  <span className="text-[10px] text-[#888888]">IDR {item.price.toLocaleString("id-ID")}</span>
-                  <span className="text-[10px] text-[#888888] mt-1">Qty: {item.quantity}</span>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <span className="text-[11px] font-medium tracking-wide uppercase text-white">{item.name}</span>
+                  <span className="text-[10px] text-[#888888] font-semibold">IDR {item.price.toLocaleString("id-ID")}</span>
+                  
+                  {/* Quantity Controller */}
+                  <div className="flex items-center border border-white/10 rounded-sm self-start mt-1">
+                    <button 
+                      onClick={() => decrementItem(item.id)} 
+                      className="px-2 py-0.5 text-white/50 hover:text-white transition-colors cursor-none text-[11px]"
+                    >
+                      —
+                    </button>
+                    <span className="px-2 py-0.5 text-[10px] text-white font-medium min-w-[18px] text-center border-x border-white/10">
+                      {item.quantity}
+                    </span>
+                    <button 
+                      onClick={() => addItem({ id: item.id, name: item.name, price: item.price, image_url: item.image_url })} 
+                      className="px-2 py-0.5 text-white/50 hover:text-white transition-colors cursor-none text-[11px]"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
                 <button 
-                  className="text-[#888888] text-xs opacity-60 hover:opacity-100 transition-opacity cursor-none"
+                  className="text-[9px] text-[#888888] opacity-60 hover:opacity-100 hover:text-white transition-all cursor-none tracking-widest"
                   onClick={() => removeItem(item.id)}
                 >
                   REMOVE
@@ -315,27 +368,44 @@ export default function Home() {
         </div>
 
         {items.length > 0 && (
-          <div className="px-8 py-4 border-t border-white/10 flex justify-between items-center">
-            <span className="text-[11px] font-semibold tracking-widest uppercase text-white">SUBTOTAL</span>
-            <span className="text-sm font-semibold tracking-wide text-white">IDR {getCartTotal().toLocaleString("id-ID")}</span>
+          <div className="px-6 py-4 border-t border-white/5 bg-black/10 flex justify-between items-center">
+            <span className="text-[10px] font-semibold tracking-widest uppercase text-[#888888]">Estimated Total</span>
+            <span className="text-sm font-bold tracking-wide text-white">IDR {getCartTotal().toLocaleString("id-ID")}</span>
           </div>
         )}
 
-        <div className="p-8 border-t border-white/10 flex flex-col gap-3">
-          <button className="w-full p-4 bg-white text-black text-xs font-semibold tracking-widest uppercase border-none cursor-none transition-colors hover:bg-gray-200 hover-target" onClick={() => {
-            const message = `Halo RNVN, saya ingin memesan:\n\n` + 
-                            items.map(item => `- ${item.name} (${item.quantity}x) = IDR ${(item.price * item.quantity).toLocaleString("id-ID")}`).join("\n") +
-                            `\n\nTotal: IDR ${getCartTotal().toLocaleString("id-ID")}`;
-            window.open(`https://wa.me/628563122123?text=${encodeURIComponent(message)}`, "_blank");
-          }}>
+        <div className="p-6 border-t border-white/5 flex flex-col gap-2.5 bg-black/20">
+          <button 
+            disabled={items.length === 0}
+            className="w-full p-4 bg-white text-black text-[11px] font-bold tracking-widest uppercase border-none cursor-none transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none" 
+            onClick={() => {
+              const message = `Halo RNVN, saya ingin memesan:\n\n` + 
+                              items.map(item => `- ${item.name} (${item.quantity}x) = IDR ${(item.price * item.quantity).toLocaleString("id-ID")}`).join("\n") +
+                              `\n\nTotal: IDR ${getCartTotal().toLocaleString("id-ID")}`;
+              window.open(`https://wa.me/628563122123?text=${encodeURIComponent(message)}`, "_blank");
+            }}
+          >
             Checkout via WhatsApp
           </button>
-          <a href="https://vt.tiktok.com/ZSHKqtkr8/?page=Mall" target="_blank" rel="noopener noreferrer" className="w-full p-4 bg-[#050505] text-white border border-white/30 text-xs font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-colors hover:bg-white hover:text-black hover-target">
-            Buy on TikTok Shop
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" className="w-full p-4 bg-[#050505] text-white border border-white/30 text-xs font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-colors hover:bg-white hover:text-black hover-target">
-            Buy on Shopee
-          </a>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <a 
+              href="https://vt.tiktok.com/ZSHKqtkr8/?page=Mall" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="p-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
+            >
+              TikTok Shop
+            </a>
+            <a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="p-3 bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 text-white text-[9px] font-semibold tracking-widest uppercase text-center no-underline cursor-none transition-all duration-300"
+            >
+              Shopee Store
+            </a>
+          </div>
         </div>
       </div>
 
@@ -346,20 +416,53 @@ export default function Home() {
         </div>
       )}
 
+      {/* Floating Cart Button (Mobile only) */}
+      <button 
+        onClick={() => setCartActive(true)}
+        className="md:hidden fixed bottom-6 right-6 z-[990] w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-luxury border border-white/10 hover-target active:scale-95 transition-all"
+        aria-label="Shopping Cart"
+      >
+        <div className="relative">
+          <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          {items.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-black text-white text-[9px] font-bold rounded-full w-5 h-5 flex items-center justify-center border border-white/20 animate-badge-pulse">
+              {items.reduce((total, item) => total + item.quantity, 0)}
+            </span>
+          )}
+        </div>
+      </button>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full px-5 md:px-[5vw] py-5 md:py-6 flex justify-between items-center z-[100] bg-black/70 backdrop-blur-md border-b border-white/10">
+      <nav className={`fixed top-0 w-full px-5 md:px-[5vw] transition-all duration-300 z-[100] flex justify-between items-center ${scrolled ? "py-4 bg-black/85 backdrop-blur-xl border-b border-white/5 shadow-luxury" : "py-6 bg-transparent border-b border-white/0"}`}>
         <div className="flex items-center gap-8">
           <a href="#" className="font-[family-name:var(--font-syncopate)] font-bold text-lg tracking-[4px] text-white no-underline hover-target">RNVN</a>
         </div>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <ul className="hidden md:flex gap-8 list-none m-0 p-0">
             <li><a href="#collection" className="text-[11px] font-medium uppercase tracking-[2px] text-white no-underline opacity-70 hover:opacity-100 transition-opacity hover-target">Drop</a></li>
             <li><a href="#collection" className="text-[11px] font-medium uppercase tracking-[2px] text-white no-underline opacity-70 hover:opacity-100 transition-opacity hover-target">Collection</a></li>
             <li><a href="#manifesto" className="text-[11px] font-medium uppercase tracking-[2px] text-white no-underline opacity-70 hover:opacity-100 transition-opacity hover-target">Manifesto</a></li>
           </ul>
-          <button className="hidden md:block bg-transparent border-none text-white text-[11px] font-medium uppercase tracking-[2px] cursor-none transition-opacity hover:opacity-70 hover-target" onClick={() => setCartActive(true)}>
-            Cart ({items.length})
+          
+          <button 
+            className="flex items-center gap-2 bg-transparent border-none text-white text-[11px] font-medium uppercase tracking-[2px] cursor-none transition-opacity hover:opacity-75 hover-target" 
+            onClick={() => setCartActive(true)}
+          >
+            <span className="hidden md:inline">Cart</span>
+            <div className="relative p-1">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+              {items.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-white text-black text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-badge-pulse">
+                  {items.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
+            </div>
           </button>
+
           <div className={`md:hidden flex flex-col gap-[5px] cursor-none z-[1001] hover-target ${menuActive ? "active" : ""}`} onClick={() => setMenuActive(!menuActive)}>
             <span className={`block w-6 h-[1.5px] bg-white transition-transform ${menuActive ? "translate-y-[6.5px] rotate-45" : ""}`}></span>
             <span className={`block w-6 h-[1.5px] bg-white transition-opacity ${menuActive ? "opacity-0" : ""}`}></span>
@@ -409,102 +512,170 @@ export default function Home() {
           <a href="#" className="text-[11px] font-medium uppercase tracking-wide text-[#888888] no-underline transition-colors hover:text-white hover-target">View Full Catalog</a>
         </div>
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-y-[60px] gap-x-[30px] md:gap-y-[60px] md:gap-x-[30px] max-md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] max-md:gap-y-[40px] max-md:gap-x-[20px]">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-y-10 gap-x-6 md:gap-y-[60px] md:gap-x-[30px] max-md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] max-md:gap-y-6 max-md:gap-x-4">
           
           {/* Product 1 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image">
-            <div className="bg-[#0a0a0a] w-full aspect-[3/4] relative overflow-hidden rounded mb-5">
-              <div className="absolute top-4 left-4 text-[9px] font-semibold tracking-[1.5px] bg-white text-black py-1 px-2 uppercase z-[2] rounded-sm">New</div>
-              <Image src="/assets/rnvn4.png" alt="Signature Boxy" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative">
+            <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
+              <div className="absolute top-3 left-3 text-[8px] md:text-[9px] font-semibold tracking-[1.5px] bg-white text-black py-0.5 px-1.5 uppercase z-[2] rounded-sm">New</div>
+              <Image src="/assets/rnvn4.png" alt="Signature Boxy" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              
+              {/* Mobile Quick Add (+) */}
+              <button 
+                className="md:hidden absolute bottom-2.5 right-2.5 bg-white text-black w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
+                onClick={(e) => {
+                  e.preventDefault();
+                  addItem({ id: 1, name: "BOXY FIT (Pre-Order)", price: 129000, image_url: "/assets/rnvn4.png" });
+                  setCartActive(true);
+                }}
+                aria-label="Add to cart"
+              >
+                <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </button>
+
+              {/* Desktop Quick Add */}
               <div 
-                className="absolute bottom-0 left-0 w-full p-4 bg-black/85 backdrop-blur-sm text-white text-center text-[10px] font-semibold tracking-widest translate-y-full transition-transform duration-300 ease-out z-[3] group-hover:translate-y-0"
+                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black/75 backdrop-blur-md text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-white hover:text-black"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 1, name: "BOXY FIT (Pre-Order)", price: 129000, image_url: "/assets/rnvn4.png" });
                   setCartActive(true);
                 }}
               >
-                QUICK ADD
+                ADD TO BAG
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-baseline">
-                <span className="text-[13px] text-white font-medium uppercase tracking-wide">BOXY FIT (Pre-Order)</span>
-                <span className="text-xs text-white font-semibold tracking-wide">IDR 129.000</span>
+            <div className="flex flex-col gap-1 px-1">
+              <div className="flex justify-between items-baseline gap-1">
+                <span className="text-[12px] md:text-[13px] text-white font-medium uppercase tracking-wide truncate">BOXY FIT (Pre-Order)</span>
+                <span className="text-[10px] md:text-xs text-white font-semibold tracking-wide flex-shrink-0">IDR 129.000</span>
               </div>
-              <div className="text-xs text-[#888888]">Cotton combed 20s</div>
+              <div className="text-[9px] md:text-xs text-[#888888] tracking-wide uppercase">Cotton combed 20s</div>
             </div>
           </a>
 
           {/* Product 2 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image" style={{ transitionDelay: "0.1s" }}>
-            <div className="bg-[#0a0a0a] w-full aspect-[3/4] relative overflow-hidden rounded mb-5">
-              <Image src="/assets/img_8767.jpg.jpeg" alt="Streetwear Core" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.1s" }}>
+            <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
+              <Image src="/assets/img_8767.jpg.jpeg" alt="Streetwear Core" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              
+              {/* Mobile Quick Add (+) */}
+              <button 
+                className="md:hidden absolute bottom-2.5 right-2.5 bg-white text-black w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
+                onClick={(e) => {
+                  e.preventDefault();
+                  addItem({ id: 2, name: "boxy fit (Pre-Order)", price: 129000, image_url: "/assets/img_8767.jpg.jpeg" });
+                  setCartActive(true);
+                }}
+                aria-label="Add to cart"
+              >
+                <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </button>
+
+              {/* Desktop Quick Add */}
               <div 
-                className="absolute bottom-0 left-0 w-full p-4 bg-black/85 backdrop-blur-sm text-white text-center text-[10px] font-semibold tracking-widest translate-y-full transition-transform duration-300 ease-out z-[3] group-hover:translate-y-0"
+                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black/75 backdrop-blur-md text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-white hover:text-black"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 2, name: "boxy fit (Pre-Order)", price: 129000, image_url: "/assets/img_8767.jpg.jpeg" });
                   setCartActive(true);
                 }}
               >
-                QUICK ADD
+                ADD TO BAG
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-baseline">
-                <span className="text-[13px] text-white font-medium uppercase tracking-wide">boxy fit (Pre-Order)</span>
-                <span className="text-xs text-white font-semibold tracking-wide">IDR 129.000</span>
+            <div className="flex flex-col gap-1 px-1">
+              <div className="flex justify-between items-baseline gap-1">
+                <span className="text-[12px] md:text-[13px] text-white font-medium uppercase tracking-wide truncate">boxy fit (Pre-Order)</span>
+                <span className="text-[10px] md:text-xs text-white font-semibold tracking-wide flex-shrink-0">IDR 129.000</span>
               </div>
-              <div className="text-xs text-[#888888]">cotton combed 20s</div>
+              <div className="text-[9px] md:text-xs text-[#888888] tracking-wide uppercase">cotton combed 20s</div>
             </div>
           </a>
 
           {/* Product 3 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image" style={{ transitionDelay: "0.2s" }}>
-            <div className="bg-[#0a0a0a] w-full aspect-[3/4] relative overflow-hidden rounded mb-5">
-              <Image src="/assets/tshirts rnvn.png" alt="Essential T-Shirt" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.2s" }}>
+            <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
+              <Image src="/assets/tshirts rnvn.png" alt="Essential T-Shirt" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              
+              {/* Mobile Quick Add (+) */}
+              <button 
+                className="md:hidden absolute bottom-2.5 right-2.5 bg-white text-black w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
+                onClick={(e) => {
+                  e.preventDefault();
+                  addItem({ id: 3, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/tshirts rnvn.png" });
+                  setCartActive(true);
+                }}
+                aria-label="Add to cart"
+              >
+                <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </button>
+
+              {/* Desktop Quick Add */}
               <div 
-                className="absolute bottom-0 left-0 w-full p-4 bg-black/85 backdrop-blur-sm text-white text-center text-[10px] font-semibold tracking-widest translate-y-full transition-transform duration-300 ease-out z-[3] group-hover:translate-y-0"
+                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black/75 backdrop-blur-md text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-white hover:text-black"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 3, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/tshirts rnvn.png" });
                   setCartActive(true);
                 }}
               >
-                QUICK ADD
+                ADD TO BAG
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-baseline">
-                <span className="text-[13px] text-white font-medium uppercase tracking-wide">T-shirt (Pre-Order)</span>
-                <span className="text-xs text-white font-semibold tracking-wide">IDR 79.000</span>
+            <div className="flex flex-col gap-1 px-1">
+              <div className="flex justify-between items-baseline gap-1">
+                <span className="text-[12px] md:text-[13px] text-white font-medium uppercase tracking-wide truncate">T-shirt (Pre-Order)</span>
+                <span className="text-[10px] md:text-xs text-white font-semibold tracking-wide flex-shrink-0">IDR 79.000</span>
               </div>
-              <div className="text-xs text-[#888888]">cotton combed 24s</div>
+              <div className="text-[9px] md:text-xs text-[#888888] tracking-wide uppercase">cotton combed 24s</div>
             </div>
           </a>
 
           {/* Product 4 */}
-          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image" style={{ transitionDelay: "0.3s" }}>
-            <div className="bg-[#0a0a0a] w-full aspect-[3/4] relative overflow-hidden rounded mb-5">
-              <Image src="/assets/img_8789.jpg.jpeg" alt="Urban Edition" fill className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+          <a href="#" className="flex flex-col no-underline text-inherit cursor-none group reveal hover-target-image border border-white/5 bg-[#080808]/40 p-3 md:p-4 rounded-lg transition-all duration-500 hover:border-white/10 hover:bg-[#080808]/80 hover:shadow-luxury relative" style={{ transitionDelay: "0.3s" }}>
+            <div className="bg-[#030303] w-full aspect-[3/4] relative overflow-hidden rounded-md mb-4 border border-white/5">
+              <Image src="/assets/img_8789.jpg.jpeg" alt="Urban Edition" fill className="object-contain p-3 md:p-4 transition-transform duration-700 ease-out group-hover:scale-105" />
+              
+              {/* Mobile Quick Add (+) */}
+              <button 
+                className="md:hidden absolute bottom-2.5 right-2.5 bg-white text-black w-8 h-8 rounded-full shadow-lg z-[4] flex items-center justify-center hover-target active:scale-90 transition-transform"
+                onClick={(e) => {
+                  e.preventDefault();
+                  addItem({ id: 4, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/img_8789.jpg.jpeg" });
+                  setCartActive(true);
+                }}
+                aria-label="Add to cart"
+              >
+                <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </button>
+
+              {/* Desktop Quick Add */}
               <div 
-                className="absolute bottom-0 left-0 w-full p-4 bg-black/85 backdrop-blur-sm text-white text-center text-[10px] font-semibold tracking-widest translate-y-full transition-transform duration-300 ease-out z-[3] group-hover:translate-y-0"
+                className="hidden md:flex absolute bottom-0 left-0 w-full p-4 bg-black/75 backdrop-blur-md text-white justify-center items-center text-[10px] font-bold tracking-widest translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-[3] group-hover:translate-y-0 hover:bg-white hover:text-black"
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({ id: 4, name: "T-shirt (Pre-Order)", price: 79000, image_url: "/assets/img_8789.jpg.jpeg" });
                   setCartActive(true);
                 }}
               >
-                QUICK ADD
+                ADD TO BAG
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-baseline">
-                <span className="text-[13px] text-white font-medium uppercase tracking-wide">T-shirt (Pre-Order)</span>
-                <span className="text-xs text-white font-semibold tracking-wide">IDR 79.000</span>
+            <div className="flex flex-col gap-1 px-1">
+              <div className="flex justify-between items-baseline gap-1">
+                <span className="text-[12px] md:text-[13px] text-white font-medium uppercase tracking-wide truncate">T-shirt (Pre-Order)</span>
+                <span className="text-[10px] md:text-xs text-white font-semibold tracking-wide flex-shrink-0">IDR 79.000</span>
               </div>
-              <div className="text-xs text-[#888888]">cotton combed 24s</div>
+              <div className="text-[9px] md:text-xs text-[#888888] tracking-wide uppercase">cotton combed 24s</div>
             </div>
           </a>
 
